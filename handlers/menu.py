@@ -68,12 +68,20 @@ async def show_product_page(call: types.CallbackQuery, product, category_id, ind
                 pass
             
             if product['image_url']:
-                await call.message.answer_photo(photo=product['image_url'], caption=caption, reply_markup=markup, parse_mode="HTML")
+                try:
+                    await call.message.answer_photo(photo=product['image_url'], caption=caption, reply_markup=markup, parse_mode="HTML")
+                except Exception as e:
+                    print(f"Failed to send image: {e}")
+                    await call.message.answer(f"🖼 Rasm yuklanmadi.\n\n{caption}", reply_markup=markup, parse_mode="HTML")
             else:
                 await call.message.answer(caption, reply_markup=markup, parse_mode="HTML")
     else:
         if product['image_url']:
-            await call.message.answer_photo(photo=product['image_url'], caption=caption, reply_markup=markup, parse_mode="HTML")
+            try:
+                await call.message.answer_photo(photo=product['image_url'], caption=caption, reply_markup=markup, parse_mode="HTML")
+            except Exception as e:
+                print(f"Failed to send image: {e}")
+                await call.message.answer(f"🖼 Rasm yuklanmadi.\n\n{caption}", reply_markup=markup, parse_mode="HTML")
         else:
             await call.message.answer(caption, reply_markup=markup, parse_mode="HTML")
 
