@@ -47,6 +47,28 @@ if __name__ == '__main__':
     register_order_handlers(dp)
     register_admin_handlers(dp)
     
+    
+    # Render requires a web server to bind to a port for Web Services
+    # We will start a dummy web server
+    import os
+    from aiohttp import web
+    
+    async def health_check(request):
+        return web.Response(text="OK")
+        
+    async def start_web_server():
+        app = web.Application()
+        app.router.add_get('/', health_check)
+        app.router.add_get('/health', health_check)
+        
+        runner = web.AppRunner(app)
+        await runner.setup()
+        site = web.TCPSite(runner, '0.0.0.0', int(os.getenv("PORT", 8080)))
+        await site.start()
+        logging.info(f"Web server started on port {os.getenv('PORT', 8080)}")
+
+    loop.create_task(start_web_server())
+
     executor.start_polling(dp, on_startup=on_startup, on_shutdown=on_shutdown, skip_updates=True, loop=loop)
 
 
